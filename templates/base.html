@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
+{% load blog_tags %}
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
@@ -18,38 +19,42 @@
     </header>
 
 
-    <main role="main" class="container m-5 p-4">
+    <main role="main" class="container my-5 py-5">
       <div class="row">
         <div class="col">
-          {% if messages %}
-            {% for message in messages %}
-              <div class="alert alert-{{message.tags}}">
-                {{message}}
+          {% if msg %}
+            {% for msg in messages %}
+              <div class="alert alert-{{msg.tags}}">
+                {{ msg }}
               </div>
             {% endfor %}
           {% endif %}
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-8">
-          {% block content %}
-          
-          {% endblock %}
-        </div>
-        <div class="col-md-4">
-          <div class="content-section">
-            <h3>Our Sidebar</h3>
-            <p class='text-muted'>You can put any information here you'd like.
-              <ul class="list-group">
-                <li class="list-group-item list-group-item-light">Latest Posts</li>
-                <li class="list-group-item list-group-item-light">Announcements</li>
-                <li class="list-group-item list-group-item-light">Calendars</li>
-                <li class="list-group-item list-group-item-light">etc</li>
-              </ul>
-            </p>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8">
+            {% block content %}
+            
+            {% endblock %}
           </div>
-        </div>
+          <div class="col-md-4">
+            <div class="content-section">
+              <h3>Our Sidebar</h3>
+              <p class='text-muted'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                <ul class="list-group">
+                  <h3>Latest Posts</h3>
+                    {% latest_post %}
+                  <h3>Popular Posts</h3>
+                    {% popular_post %}
+                </ul>
+              </p>
+            </div>
+          </div>
+        </div>  
+
       </div>
+
     </main>
 
     <footer>

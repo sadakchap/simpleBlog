@@ -5,11 +5,43 @@
         <img src="{{post.author.profile.image.url}}" alt="A person" class="rounded-circle article-img">
         <div class="media-body">
           <div class="article-metadata">
-            <a class="mr-2" href="{% url 'user-posts' username=post.author%}">{{ post.author }}</a>
-            <small class="text-muted">{{ post.date_posted|date:"F d,Y" }}</small>
+            <a class="mr-2" href="{% url 'user-posts' username=post.author %}">{{ post.author|title }}</a>
+            <small class="text-muted">{{ post.created|date:"F d,Y" }}</small>
           </div>
-          <h2><a class="article-title" href="{% url 'post-detail' pk=post.pk%}">{{ post.title }}</a></h2>
-          <p class="article-content">{{ post.content }}</p>
+          <h2><a class="article-title" href="{% url 'post-detail' pk=post.pk%}">{{ post.title|title }}</a></h2>
+          <p class="article-content">{{ post.content|truncatewords_html:60 }}</p>
+          
+          <div class="comments">
+            <p class="mx-1">
+              {% with total_comments=post.comments.count %}
+                <a class="text-muted" href="{% url 'post-detail' pk=post.pk %}">View all {{ total_comments }} comment{{ total_comments|pluralize }}</a>
+              {% endwith %}
+            </p>
+            {% if post.comments.all %}
+              <div class="comment-bx bg-light px-2 border">
+                {% with comment=post.comments.first %}
+                  <p class="m-0">{{ comment.text|truncatewords:30 }}</p>
+                  <p class="d-flex justify-content-between m-1">
+                    <a href="{% url 'user-posts' username=comment.author %}" class="text-success font-weight-bold">
+                      {{ comment.author|title }}
+                    </a>
+                    <span class="text-muted">{{ comment.created|timesince }}</span>
+                  </p>
+                {% endwith %}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- <form action="" method="post" class="my-3">
+            {% csrf_token %} 
+            <div class="form-group">
+              <textarea class="form-control" id="textarea" rows="1" placeholder="Add a comment..." required></textarea>
+            </div>
+            <div class="form-group text-right">
+              <input type="submit" value="Comment" class="btn btn-outline-success btn-sm">
+            </div>
+          </form> -->
+
         </div>
     </article>
     {% endfor %}

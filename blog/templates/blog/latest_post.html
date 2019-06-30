@@ -1,0 +1,5 @@
+<ul class="my-2">
+    {% for post in posts %}
+        <li><a class="text-info" href="{{ post.get_absolute_url }}">{{ post.title|capfirst }}</a></li>
+    {% endfor %}
+</ul>

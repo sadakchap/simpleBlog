@@ -1,14 +1,40 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 {% block content %}
 <article class="media content-section">
     <img src="{{post.author.profile.image.url}}" alt="A person" class="rounded-circle article-img">
     <div class="media-body">
       <div class="article-metadata">
-        <a class="mr-2" href="{% url 'user-posts' username=post.author%}">{{ post.author }}</a>
+        <a class="mr-2" href="{% url 'user-posts' username=post.author%}">{{ post.author|capfirst }}</a>
         <small class="text-muted">{{ post.date_posted|date:"F d,Y" }}</small>
       </div>
-      <h2><a class="article-title" href="{% url 'post-detail' pk=post.pk%}">{{ post.title }}</a></h2>
-      <p class="article-content">{{ post.content }}</p>
+      <h2><a class="article-title" href="{% url 'post-detail' pk=post.pk%}">{{ post.title|capfirst }}</a></h2>
+      <p class="article-content">{{ post.content|linebreaks }}</p>
+
+      <form action="{% url 'add_comment' post.id %}" method="post">
+        {% csrf_token %}
+        {{ comment_form|crispy }}
+        <input type="submit" value="Comment" class="btn btn-outline-success">
+      </form>
+      
+      {% if comments %}
+        <div class="comments my-2">
+          {% with total=comments.count %}
+            <p class="text-muted">{{ total }} comment{{ total|pluralize }}</p>
+            {% for c in comments %}
+              <div class="comment-bx bg-light p-1 my-2 border-bottom">
+                {{ c.text|capfirst|linebreaks }}
+                <p class="d-flex justify-content-between">
+                  <a href="{% url 'user-posts' username=c.author %}">{{ c.author|capfirst }}</a>
+                  <span class="text-muted">{{ c.created|timesince }}</span>
+                </p>
+              </div>
+            {% endfor %}
+          {% endwith %}
+        </div>
+      {% else %}
+        <p>No comments </p>
+      {% endif %}
       {% if post.author == user %}
           <div class="">
             <a href="{% url 'post-update' post.pk%}" class="btn btn-warning">Update</a>
