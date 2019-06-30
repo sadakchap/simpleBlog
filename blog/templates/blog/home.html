@@ -8,9 +8,27 @@
             <a class="mr-2" href="{% url 'user-posts' username=post.author %}">{{ post.author|title }}</a>
             <small class="text-muted">{{ post.created|date:"F d,Y" }}</small>
           </div>
-          <h2><a class="article-title" href="{% url 'post-detail' pk=post.pk%}">{{ post.title|title }}</a></h2>
+          <h2><a class="article-title" href="{% url 'post-detail' pk=post.pk%}">{{ post.title|capfirst }}</a></h2>
           <p class="article-content">{{ post.content|truncatewords_html:60 }}</p>
           
+          <div class="likes d-flex align-items-center">
+            {% with total=post.likes.count likes=post.likes.all%}
+              <p class="count text-muted m-0">
+                <span class="total" id="total-{{post.id}}">{{ total }}</span> Like{{ total|pluralize }}
+              </p>
+              <a href="#" class="btn mx-2 text-danger font-weight-bold like" id="like-{{post.id}}" data-id="{{ post.id }}" data-action="{% if request.user in likes%}un{% endif %}like">
+                {% if request.user in likes %}
+                  UnLike
+                {% else %}
+                  Like
+                {% endif %}
+              </a>
+            {% endwith %}
+            
+            <a href="{% url 'share_post' post.pk %}">Share</a>
+
+          </div>
+
           <div class="comments">
             <p class="mx-1">
               {% with total_comments=post.comments.count %}
@@ -66,4 +84,27 @@
 
     {% endif %}
 
+{% endblock %}
+{% block domready %}
+    $('a.like').click(function(e){
+      e.preventDefault();
+      $.post('{% url "like" %}',
+          {
+            id: $(this).data('id'),
+            action: $(this).data('action')
+          },
+          function(data){
+            if(data['status']=='ok'){
+              var post_id = data['id']
+              var prev_likes = parseInt($(`p.count #total-${post_id}`).text());
+              var prev_action = $(`a#like-${post_id}`).data('action');
+              $(`a#like-${post_id}`).data('action', prev_action=='like'?'unlike':'like');
+              $(`a#like-${post_id}`).text(prev_action == 'like' ? 'UnLike' : 'Like');
+              $(`p.count #total-${post_id}`).text(prev_action=='like'?prev_likes+1:prev_likes-1);
+              <!-- console.log($(`p.count .total-${post_id}`).text()); -->
+
+            }
+          }
+      )
+    });
 {% endblock %}

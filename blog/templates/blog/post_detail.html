@@ -11,12 +11,35 @@
       <h2><a class="article-title" href="{% url 'post-detail' pk=post.pk%}">{{ post.title|capfirst }}</a></h2>
       <p class="article-content">{{ post.content|linebreaks }}</p>
 
+      {% if post.likes %}
+        <div class="likes d-flex align-items-center my-2">
+          {% with total=post.likes.count likes=post.likes.all %}
+            <p class="text-muted count m-0">
+              <span class="total">{{ total }}</span> like{{ total|pluralize }}
+            </p>
+            <a href="#" data-id="{{ post.id }}"
+                       data-action="{% if request.user in likes %}un{% endif %}like"
+                       class="btn text-danger font-weight-bold like">
+              {% if request.user in likes %}
+                Unlike
+              {% else %}
+                Like
+              {% endif %}
+            </a>
+          {% endwith %}
+
+          <a href="{% url 'share_post' post.pk %}">Share</a>
+        </div>
+      {% else %}
+        <p class="text-muted">Be the fisrt one to like.</p>
+      {% endif %}
+      
       <form action="{% url 'add_comment' post.id %}" method="post">
         {% csrf_token %}
         {{ comment_form|crispy }}
         <input type="submit" value="Comment" class="btn btn-outline-success">
       </form>
-      
+
       {% if comments %}
         <div class="comments my-2">
           {% with total=comments.count %}
@@ -45,3 +68,26 @@
 
 </article>
 {% endblock %}
+
+
+  {% block domready %}
+    $('a.like').click(function(e){
+      e.preventDefault();
+
+      $.post('{% url "like" %}',
+          {
+            id: $(this).data('id'),
+            action: $(this).data('action')
+          },
+          function(data){
+            if(data['status'] == 'ok'){
+              var prev_likes = parseInt($('p.count .total').text());
+              var prev_action     = $('a.like').data('action');
+              $('a.like').data('action', prev_action=='like'?'unlike':'like');
+              $('a.like').text(prev_action == 'like' ? 'UnLike' : 'Like');
+              $('p.count .total').text(prev_action=='like'?prev_likes+1:prev_likes-1);
+            }
+          }
+      )
+    });
+  {% endblock %}  

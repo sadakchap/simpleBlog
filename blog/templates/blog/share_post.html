@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Share a Post {% endblock %}
+{% block content %}
+    <div class="jumbotron">
+        <div class="container">
+            <h2>Share "<a href="{{ post.get_absolute_url }}" class="text-success">{{post.title|capfirst}}</a>"</h2>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div class="form-group text-center">
+                <input type="submit" value="Share Post" class="btn btn-info">
+            </div>
+        </form>
+    </div>
+{% endblock %}
