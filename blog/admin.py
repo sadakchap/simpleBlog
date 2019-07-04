@@ -14,4 +14,9 @@ class PostAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug':('title',)}
     inlines = [CommentInline]
 
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ['text','author','post','created','updated']
+    list_filter = ['created', 'updated']
+
 # admin.site.register(Comment)

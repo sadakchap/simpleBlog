@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
     <h1 class="mb-4">Posts by {{view.kwargs.username}} ({{page_obj.paginator.count}})</h1>
     {% for post in posts %}
     <article class="media content-section">
-        <img src="{{post.author.profile.image.url}}" alt="A person" class="rounded-circle article-img">
+      {% with img=post.author.profile.image %}
+        <img src="{% if img %}{{img.url}}{% else %}{% static 'img/default.png' %}{% endif %}" alt="A person"
+          class="rounded-circle article-img">
+      {% endwith %}
         <div class="media-body">
           <div class="article-metadata">
             <a class="mr-2" href="{% url 'user-posts' username=post.author%}">{{ post.author }}</a>

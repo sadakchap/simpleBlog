@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
     {% for post in posts %}
     <article class="media content-section">
-        <img src="{{post.author.profile.image.url}}" alt="A person" class="rounded-circle article-img">
+      {% with img=post.author.profile.image %}
+        <img src="{% if img %}{{img.url}}{% else %}{% static 'img/default.png' %}{% endif %}" alt="A person" class="rounded-circle article-img">
+      {% endwith %}
         <div class="media-body">
           <div class="article-metadata">
             <a class="mr-2" href="{% url 'user-posts' username=post.author %}">{{ post.author|title }}</a>
@@ -32,22 +35,13 @@
           <div class="comments">
             <p class="mx-1">
               {% with total_comments=post.comments.count %}
-                <a class="text-muted" href="{% url 'post-detail' pk=post.pk %}">View all {{ total_comments }} comment{{ total_comments|pluralize }}</a>
+                {% if total_comments > 0 %}  
+                  <a class="text-muted" href="{% url 'post-detail' pk=post.pk %}">View all {{ total_comments }} comment{{ total_comments|pluralize }}</a>
+                {% else %}
+                  <a class="text-muted" href="{% url 'post-detail' pk=post.pk %}">be first to Comment </a>
+                {% endif %}
               {% endwith %}
             </p>
-            {% if post.comments.all %}
-              <div class="comment-bx bg-light px-2 border">
-                {% with comment=post.comments.first %}
-                  <p class="m-0">{{ comment.text|truncatewords:30 }}</p>
-                  <p class="d-flex justify-content-between m-1">
-                    <a href="{% url 'user-posts' username=comment.author %}" class="text-success font-weight-bold">
-                      {{ comment.author|title }}
-                    </a>
-                    <span class="text-muted">{{ comment.created|timesince }}</span>
-                  </p>
-                {% endwith %}
-              </div>
-            {% endif %}
           </div>
 
           <!-- <form action="" method="post" class="my-3">

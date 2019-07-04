@@ -14,14 +14,9 @@ from .forms import CommentForm, EmailPostForm
 from django.core.mail import send_mail
 from django.conf import settings
 
-def home(req):
-    context = {
-        'posts':Post.objects.all(),
-    }
-    return render(req,'blog/home.html',context)
 
 def about(req):
-    return render(req,'blog/about.html',{'title':'About'})
+    return render(req,'about.html',{'title':'About'})
 
 
 class PostListView(ListView):
@@ -45,7 +40,7 @@ class PostDetailView(DetailView):
     # context_object_name = 'oo'
     def get_context_data(self, *args, **kwargs):
         context = super(PostDetailView, self).get_context_data(*args, **kwargs)
-        context['comments'] = Comment.objects.filter(post=context['post'])
+        context['comments'] = Comment.objects.filter(post=context['post'], reply=None)
         context['comment_form'] = CommentForm()
         return context
 
@@ -85,11 +80,15 @@ def add_comment(request, post_id):
     if request.method=='POST':
         post = get_object_or_404(Post, id=post_id)
         text = request.POST.get('text')
-        Comment.objects.create(text=text,post=post,author=request.user)
+        reply_id = request.POST.get('comment_id')
+        comment_qs = None
+        if reply_id:
+            comment_qs = Comment.objects.get(id=reply_id)
+        Comment.objects.create(text=text,post=post,author=request.user,reply=comment_qs)
         messages.success(request, 'Comment added successfully!')
         return redirect('post-detail',pk=post_id)
     else:
-        messages.info(request, 'cant added your comment sorry!')
+        messages.error(request, 'Sorry something went! Comment added please try again!')
     return redirect('post-detail',pk=post_id)
 
 
