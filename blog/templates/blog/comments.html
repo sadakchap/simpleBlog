@@ -1,0 +1,61 @@
+{% load crispy_forms_tags %}
+{% load static %}
+<form action="{% url 'add_comment' post.id %}" class="comment-form" method="post" data-id="{{post.id}}">
+    {% csrf_token %}
+    {{ comment_form|crispy }}
+    <input type="submit" value="Comment" class="btn btn-outline-success">
+</form>
+
+{% if comments %}
+<div class="comments my-2">
+    {% with total=comments.count %}
+    <p class="text-muted">{{ total }} comment{{ total|pluralize }}</p>
+    <ul class="list-group list-group-flush">
+        {% for c in comments %}
+        <li class="list-group-item comment">
+            {{ c.text|capfirst|linebreaks }}
+            <p class="d-flex justify-content-between align-items-center">
+                <span>
+                    <a href="{% url 'user-posts' username=c.author %}" class="text-muted">- {{ c.author|capfirst }}</a>
+                    <a href="" class="ml-2 text-info font-weight-bold reply-btn">Reply</a>
+                </span>
+                <span class="text-muted">{{ c.created|timesince }} ago</span>
+            </p>
+
+            <ul class="replies">
+                {% for reply in c.replies.all %}
+                <li>
+                    <div class="comment-bx">
+                        {{ reply.text|capfirst|linebreaks }}
+                        <p class="d-flex justify-content-between">
+                            <a href="{% url 'user-posts' username=c.author %}">{{ reply.author|capfirst }}</a>
+                            <span class="text-muted">{{ reply.created|timesince }} ago</span>
+                        </p>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <div id="reply-form" class="ml-5" style="display: none;">
+                <form action="{% url 'add_comment' post.id %}" method="post">
+                    {% csrf_token %}
+                    {{ comment_form|crispy }}
+                    <input type="hidden" name="comment_id" value={{c.id}}>
+                    <div class="form-group text-right">
+                        <input type="submit" value="Reply" class="btn btn-outline-success btn-sm">
+                    </div>
+                </form>
+            </div>
+
+        </li>
+    </ul>
+
+
+    {% endfor %}
+
+    {% endwith %}
+</div>
+{% else %}
+<p>No comments </p>
+{% endif %}
+

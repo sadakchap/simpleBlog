@@ -13,4 +13,5 @@ urlpatterns = [
     path('add/comment/<int:post_id>/', views.add_comment, name='add_comment'),
     path('like/post/', views.post_like, name='like'),
     path('share/post/<int:pk>/', views.share_post, name='share_post'),
+    # path('add/commnt/ajax/', views.post_comment, name='add_comment_ajax'),
 ]

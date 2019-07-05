@@ -36,7 +36,7 @@
             <p class="mx-1">
               {% with total_comments=post.comments.count %}
                 {% if total_comments > 0 %}  
-                  <a class="text-muted" href="{% url 'post-detail' pk=post.pk %}">View all {{ total_comments }} comment{{ total_comments|pluralize }}</a>
+                  <a class="text-muted" href="{% url 'post-detail' pk=post.pk %}">View all {{ post.count_comments }} comment{{ total_comments|pluralize }}</a>
                 {% else %}
                   <a class="text-muted" href="{% url 'post-detail' pk=post.pk %}">be first to Comment </a>
                 {% endif %}

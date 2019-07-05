@@ -49,5 +49,6 @@ body{
     border-bottom: 3px solid #9d1aefc7 !important;
     border-radius: 10px !important;
     margin: 20px 0;
+    box-shadow: 0 0 2px rgba(0,0,0,.1);
     /* border: 1px solid red; */
 }

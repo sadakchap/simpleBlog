@@ -14,85 +14,35 @@
       <h2><a class="article-title" href="{% url 'post-detail' pk=post.pk%}">{{ post.title|capfirst }}</a></h2>
       <p class="article-content">{{ post.content|linebreaks }}</p>
 
-      {% if post.likes %}
+
+      <div class="like-section">
+        {% if post.likes %}
         <div class="likes d-flex align-items-center my-2">
           {% with total=post.likes.count likes=post.likes.all %}
-            <p class="text-muted count m-0">
-              <span class="total">{{ total }}</span> like{{ total|pluralize }}
-            </p>
-            <a href="#" data-id="{{ post.id }}"
-                       data-action="{% if request.user in likes %}un{% endif %}like"
-                       class="btn text-danger font-weight-bold like">
-              {% if request.user in likes %}
-                Unlike
-              {% else %}
-                Like
-              {% endif %}
-            </a>
+          <p class="text-muted count m-0">
+            <span class="total">{{ total }}</span> like{{ total|pluralize }}
+          </p>
+          <a href="#" data-id="{{ post.id }}" data-action="{% if request.user in likes %}un{% endif %}like"
+            class="btn text-danger font-weight-bold like">
+            {% if request.user in likes %}
+            Unlike
+            {% else %}
+            Like
+            {% endif %}
+          </a>
           {% endwith %}
-
+        
           <a href="{% url 'share_post' post.pk %}">Share</a>
         </div>
-      {% else %}
-        <p class="text-muted">Be the fisrt one to like.</p>
-      {% endif %}
+        {% else %}
+          <p class="text-muted">Be the fisrt one to like.</p>
+        {% endif %}
+      </div>
       
-      <form action="{% url 'add_comment' post.id %}" method="post">
-        {% csrf_token %}
-        {{ comment_form|crispy }}
-        <input type="submit" value="Comment" class="btn btn-outline-success">
-      </form>
 
-      {% if comments %}
-        <div class="comments my-2">
-          {% with total=comments.count %}
-            <p class="text-muted">{{ total }} comment{{ total|pluralize }}</p>
-            <ul class="list-group list-group-flush">
-              {% for c in comments %}
-                <li class="list-group-item comment">
-                    {{ c.text|capfirst|linebreaks }}
-                  <p class="d-flex justify-content-between align-items-center">
-                    <span>
-                      <a href="{% url 'user-posts' username=c.author %}" class="text-muted">- {{ c.author|capfirst }}</a>
-                      <a href="" class="ml-2 text-info font-weight-bold reply-btn">Reply</a>
-                    </span>
-                    <span class="text-muted">{{ c.created|timesince }} ago</span>
-                  </p>
-                  
-                  <ul class="replies">
-                    {% for reply in c.replies.all %}
-                      <li>
-                        <div class="comment-bx">
-                          {{ reply.text|capfirst|linebreaks }}
-                          <p class="d-flex justify-content-between">
-                            <a href="{% url 'user-posts' username=c.author %}">{{ reply.author|capfirst }}</a>
-                            <span class="text-muted">{{ reply.created|timesince }} ago</span>
-                          </p>
-                        </div>
-                      </li>
-                    {% endfor %}
-                  </ul>
-
-                  <div id="reply-form" style="display: none;">
-                    <form action="{% url 'add_comment' post.id %}" method="post">
-                      {% csrf_token %}
-                      {{ comment_form|crispy }}
-                      <input type="hidden" name="comment_id" value={{c.id}}>
-                      <input type="submit" value="Reply" class="btn btn-outline-success btn-sm">
-                    </form>
-                  </div>
-
-                </li>
-              </ul>
-
-                
-              {% endfor %}
-              
-          {% endwith %}
-        </div>
-      {% else %}
-        <p>No comments </p>
-      {% endif %}
+      <div class="comment-section">
+        {% include 'blog/comments.html' %}
+      </div>
       {% if post.author == user %}
           <div class="">
             <a href="{% url 'post-update' post.pk%}" class="btn btn-warning">Update</a>
@@ -130,7 +80,6 @@
       e.preventDefault();
       $(this).parent().parent().next().next('#reply-form').fadeToggle()
     });
-
 
 
   {% endblock %}  

@@ -18,6 +18,9 @@ class Post(models.Model):
     
     def like_count(self):
         return self.likes.count()
+    
+    def count_comments(self):
+        return self.comments.all().filter(reply=None).count()
 
     def get_absolute_url(self):
         return reverse('post-detail',kwargs={'pk':self.pk})

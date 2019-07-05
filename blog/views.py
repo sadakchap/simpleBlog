@@ -7,6 +7,7 @@ from django.contrib import messages
 
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
+from django.template.loader import render_to_string
 
 from .models import Post, Comment
 from .forms import CommentForm, EmailPostForm
@@ -24,6 +25,10 @@ class PostListView(ListView):
     context_object_name = 'posts'
     template_name = 'blog/home.html'
     paginate_by = 4
+
+    # def get_context_data(self, *args, **kwargs):
+    #     context = super(PostListView, self).get_context_data(*args, **kwargs)
+    #     context['comments']
 
 class UserPostListView(ListView):
     model = Post
@@ -88,7 +93,7 @@ def add_comment(request, post_id):
         messages.success(request, 'Comment added successfully!')
         return redirect('post-detail',pk=post_id)
     else:
-        messages.error(request, 'Sorry something went! Comment added please try again!')
+        messages.error(request, 'Sorry something went wrong! Comment not added please try again!')
     return redirect('post-detail',pk=post_id)
 
 
@@ -108,6 +113,29 @@ def post_like(request):
         except:
             pass
     return JsonResponse({'status':'ko'})
+
+# @login_required
+# @require_POST
+# def post_comment(request):
+#     post_id = request.POST.get('id')
+#     text = request.POST.get('text')
+#     comment_form = CommentForm()
+#     if post_id:
+#         try:
+#             post = get_object_or_404(Post, id=post_id)
+#             comment = Comment.objects.create(text=text,post=post,author=request.user,reply=None)
+#             comments = Comment.objects.filter(post=post,reply=None)
+#             # print('added')
+#             context = {
+#                 'post': post,
+#                 'comment_form': comment_form,
+#                 'comments': comments
+#             }
+#             rendered = render_to_string('blog/comments.html', context=context, request=request)
+#             return JsonResponse({'rendered':rendered ,'status':'ok'})
+#         except:
+#             pass
+#     return JsonResponse({'status':'ko'})
 
 
 @login_required
