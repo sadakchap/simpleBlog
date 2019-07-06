@@ -26,7 +26,7 @@ class Post(models.Model):
         return reverse('post-detail',kwargs={'pk':self.pk})
     
     def save(self, *args, **kwargs):
-        if self.slug:
+        if not self.slug:
             self.slug = slugify(self.title)
         return super(Post, self).save(*args, **kwargs)
     
