@@ -15,8 +15,11 @@
           </div>
 
           <strong>---OR----</strong>
-          <a href="{% url 'social:begin' 'facebook' %}">Login with Facebook</a>
-          <a href="{% url 'social:begin' 'google-oauth2'  %}">Login with Google</a>
+          <div class="d-flex justify-content-center" style="flex-direction: column;">
+            <a href="{% url 'social:begin' 'facebook' %}" class="btn btn-info btn-lg my-2"><i class="fab fa-facebook-f mx-3"></i>Login with Facebook</a>
+            <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-danger btn-lg"><i class="fab fa-google mx-3"></i>Login with Google</a>
+          </div>        
+          
 
         </fieldset>
         <div class="border-top pt-3">
