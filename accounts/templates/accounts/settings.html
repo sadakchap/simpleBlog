@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}
+    Settings
+{% endblock %}
+{% block content %}
+    <h2 class="display-4 mb-5">Settings</h2>
+    
+    <div class="content-section p-5 bg-light">
+        
+        <h3 class="mb-3">Google</h3>
+        {% if google_login %}
+            <p>
+                Connected as 
+                <a href="https://google.com/{{ google_login }}/"
+                    target="_blank">
+                    {{ google_login }}
+                </a>
+            </p>
+            {% if can_disconnect %}
+                <form method="post" action="{% url 'social:disconnect' 'google-oauth2' %}">
+                    {% csrf_token %}
+                    <button type="submit">Disconnect from Google</button>
+                </form>
+            {% else %}
+                <button type="button" disabled style="cursor:not-allowed;">Disconnect from Google</button>
+                <p class="text-danger font-weight-bold mt-3">
+                    You must <a href="{% url 'password' %}"> define a password </a> for your account before
+                    disconnecting from Google.
+                </p>
+            {% endif %}
+        {% else %}
+            <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-danger">Connect to Google</a>
+        {% endif %}
+
+    </div>
+
+    <div class="content-section p-5 bg-light">
+        
+        <h3 class="mb-3">Facebook</h3>
+        {% if facebook_login %}
+            <p>
+                Connected as 
+                <a href="https://facebook.com/{{ facebook_login.extra_data.id }}/"
+                    target="_blank">
+                    {{ facebook_login.extra_data.id }}
+                </a>
+            </p>
+            {% if can_disconnect %}
+                <form method="post" action="{% url 'social:disconnect' 'facebook' %}">
+                    {% csrf_token %}
+                    <button type="submit">Disconnect from Facebook</button>
+                </form>
+            {% else %}
+                <button type="button" disabled style="cursor:not-allowed;">Disconnect from Facebook</button>
+                <p class="text-danger font-weight-bold mt-3">
+                    You must <a href="{% url 'password' %}"> define a password </a> for your account before
+                    disconnecting from Facebbok.
+                </p>
+            {% endif %}
+        {% else %}
+            <a href="{% url 'social:begin' 'facebook' %}" class="btn btn-info">Connect to Facebook</a>
+        {% endif %}
+
+    </div>
+
+
+
+{% endblock %}

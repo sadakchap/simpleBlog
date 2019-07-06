@@ -32,6 +32,11 @@ urlpatterns = [
              template_name='accounts/password_reset_complete.html'
          ),
          name='password_reset_complete'),
+    path('account_activation_sent/',acc_views.account_activation_sent, name='account_activation_sent'),
+    path('activate/<uidb64>/<token>/', acc_views.activate, name='activate'),
+    path('oauth/', include('social_django.urls', namespace='social')),
+    path('settings/', acc_views.settings, name='settings'),
+    path('password/settings/', acc_views.password, name='password'),
 
 ]
 
